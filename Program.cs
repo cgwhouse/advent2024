@@ -8,7 +8,7 @@ if (!int.TryParse(args[0], out var day) || !int.TryParse(args[1], out var part))
 }
 
 var dayType =
-    Type.GetType($"advent2022.Day{day}")
+    Type.GetType($"advent2024.Day{day}")
     ?? throw new Exception($"Unable to find implementation for day {day}");
 
 var dayInstance =
