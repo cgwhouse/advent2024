@@ -1,12 +1,9 @@
 using System;
 
-namespace advent2024;
+namespace advent2024.Days;
 
-public class DayTemplate : BaseDay
+public class DayTemplate(int day) : BaseDay(day)
 {
-    public DayTemplate(int day)
-        : base(day) { }
-
     protected override string SolveFirst()
     {
         throw new NotImplementedException();
