@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace advent2024.Days;
 
@@ -29,6 +30,20 @@ public class Day1(int day) : BaseDay(day)
 
     protected override string SolveSecond()
     {
-        throw new NotImplementedException();
+        var left = new List<int>();
+        var right = new List<int>();
+
+        foreach (var line in InputFromFile)
+        {
+            left.Add(int.Parse(line.Split("   ")[0]));
+            right.Add(int.Parse(line.Split("   ")[1]));
+        }
+
+        var result = 0;
+
+        foreach (var num in left)
+            result += num * right.Where(x => x == num).Count();
+
+        return result.ToString();
     }
 }
