@@ -13,9 +13,3 @@ public abstract class BaseDay
     protected abstract string SolveFirst();
     protected abstract string SolveSecond();
 }
-
-//public interface IDay
-//{
-//    public string SolveFirst();
-//    public string SolveSecond();
-//}
