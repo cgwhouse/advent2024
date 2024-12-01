@@ -15,18 +15,14 @@ var dayInstance =
     ?? throw new Exception($"Unable to calculate solution for day {day}");
 
 string result;
-switch (part)
+
+result = part switch
 {
-    case 1:
-        result = dayInstance.FirstResult;
-        break;
-    case 2:
-        result = dayInstance.SecondResult;
-        break;
-    default:
-        throw new Exception(
-            "Provide a 1 or 2 for the second argument (part 1 or 2 of the solution)"
-        );
-}
+    1 => (string)dayInstance.FirstResult,
+    2 => (string)dayInstance.SecondResult,
+    _ => throw new Exception(
+        "Provide a 1 or 2 for the second argument (part 1 or 2 of the solution)"
+    ),
+};
 
 Console.WriteLine($"Result: {result}");
