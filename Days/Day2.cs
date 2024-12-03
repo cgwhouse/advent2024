@@ -61,7 +61,7 @@ public class Day2(int day) : BaseDay(day)
         return result.ToString();
     }
 
-    private bool ReportIsSafe(List<int> nums)
+    private static bool ReportIsSafe(List<int> nums)
     {
         if (nums[0] == nums[1])
             return false;
