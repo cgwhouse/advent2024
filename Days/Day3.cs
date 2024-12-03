@@ -11,9 +11,9 @@ public class Day3(int day) : BaseDay(day)
 
         foreach (var line in InputFromFile)
         {
-            for (int i = 0; i < line.Count(); i++)
+            for (int i = 0; i < line.Length; i++)
             {
-                if (i + 4 >= line.Count())
+                if (i + 4 >= line.Length)
                     break;
 
                 if (line.Substring(i, 4) != "mul(")
@@ -25,12 +25,12 @@ public class Day3(int day) : BaseDay(day)
 
                 while (int.TryParse(line[curr].ToString(), out var digit))
                 {
-                    first += digit.ToString();
+                    first += digit;
                     curr++;
                 }
 
                 // We need to now be on a comma, with ints accumulated
-                if (line[curr].ToString() != "," || !int.TryParse(first, out var firstInt))
+                if (line[curr] != ',' || !int.TryParse(first, out var firstInt))
                     continue;
 
                 // Move past the comma and try to collect secondInt
@@ -40,11 +40,11 @@ public class Day3(int day) : BaseDay(day)
 
                 while (int.TryParse(line[curr].ToString(), out var digit))
                 {
-                    second += digit.ToString();
+                    second += digit;
                     curr++;
                 }
 
-                if (line[curr].ToString() != ")" || !int.TryParse(second, out var secondInt))
+                if (line[curr] != ')' || !int.TryParse(second, out var secondInt))
                     continue;
 
                 result += firstInt * secondInt;
