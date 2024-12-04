@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace advent2024.Days;
 
@@ -9,95 +10,51 @@ public class Day4(int day) : BaseDay(day)
     {
         var result = 0;
 
-        var matrix = new List<List<string>>();
+        var matrix = new List<List<char>>();
 
         foreach (var line in InputFromFile)
-            matrix.Add([.. line.Split("")]);
+            matrix.Add([.. line.ToCharArray()]);
 
         for (int i = 0; i < matrix.Count; i++)
         {
             for (int j = 0; j < matrix[i].Count; j++)
             {
-                if (matrix[i][j] != "X")
+                if (matrix[i][j] != 'X')
                     continue;
 
+                ImmutableList<ImmutableList<(int Row, int Column)>> combos =
+                [
+                    // East
+                    [(i, j + 1), (i, j + 2), (i, j + 3)],
+                    // Southeast
+                    [(i + 1, j + 1), (i + 2, j + 2), (i + 3, j + 3)],
+                    // South
+                    [(i + 1, j), (i + 2, j), (i + 3, j)],
+                    // Southwest
+                    [(i + 1, j - 1), (i + 2, j - 2), (i + 3, j - 3)],
+                    // West
+                    [(i, j - 1), (i, j - 2), (i, j - 3)],
+                    // Northwest
+                    [(i - 1, j - 1), (i - 2, j - 2), (i - 3, j - 3)],
+                    // North
+                    [(i - 1, j), (i - 2, j), (i - 3, j)],
+                    // Northeast
+                    [(i - 1, j + 1), (i - 2, j + 2), (i - 3, j + 3)],
+                ];
+
                 // Look for MAS in each possible direction
-
-                // East
-                try
+                foreach (var combo in combos)
                 {
-                    if ($"{matrix[i][j + 1]}{matrix[i][j + 2]}{matrix[i][j + 3]}" == "MAS")
-                        result += 1;
+                    try
+                    {
+                        if (
+                            $"{matrix[combo[0].Row][combo[0].Column]}{matrix[combo[1].Row][combo[1].Column]}{matrix[combo[2].Row][combo[2].Column]}"
+                            == "MAS"
+                        )
+                            result++;
+                    }
+                    catch (ArgumentOutOfRangeException) { }
                 }
-                catch (Exception) { }
-
-                // Southeast
-                try
-                {
-                    if (
-                        $"{matrix[i + 1][j + 1]}{matrix[i + 2][j + 2]}{matrix[i + 3][j + 3]}"
-                        == "MAS"
-                    )
-                        result += 1;
-                }
-                catch (Exception) { }
-
-                // South
-                try
-                {
-                    if ($"{matrix[i + 1][j]}{matrix[i + 2][j]}{matrix[i + 3][j]}" == "MAS")
-                        result += 1;
-                }
-                catch (Exception) { }
-
-                // Southwest
-                try
-                {
-                    if (
-                        $"{matrix[i + 1][j - 1]}{matrix[i + 2][j - 2]}{matrix[i + 3][j - 3]}"
-                        == "MAS"
-                    )
-                        result += 1;
-                }
-                catch (Exception) { }
-
-                // West
-                try
-                {
-                    if ($"{matrix[i][j - 1]}{matrix[i][j - 2]}{matrix[i][j - 3]}" == "MAS")
-                        result += 1;
-                }
-                catch (Exception) { }
-
-                // Northwest
-                try
-                {
-                    if (
-                        $"{matrix[i - 1][j - 1]}{matrix[i - 2][j - 2]}{matrix[i - 3][j - 3]}"
-                        == "MAS"
-                    )
-                        result += 1;
-                }
-                catch (Exception) { }
-
-                // North
-                try
-                {
-                    if ($"{matrix[i - 1][j]}{matrix[i - 2][j]}{matrix[i - 3][j]}" == "MAS")
-                        result += 1;
-                }
-                catch (Exception) { }
-
-                // Northeast
-                try
-                {
-                    if (
-                        $"{matrix[i - 1][j + 1]}{matrix[i - 2][j + 2]}{matrix[i - 3][j + 3]}"
-                        == "MAS"
-                    )
-                        result += 1;
-                }
-                catch (Exception) { }
             }
         }
 
