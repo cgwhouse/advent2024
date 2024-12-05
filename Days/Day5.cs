@@ -91,8 +91,8 @@ public class Day5(int day) : BaseDay(day)
                 var first = int.Parse(rule[0]);
                 var second = int.Parse(rule[1]);
 
-                if (rulesDict.ContainsKey(first))
-                    rulesDict[first].Add(second);
+                if (rulesDict.TryGetValue(first, out var rules))
+                    rules.Add(second);
                 else
                     rulesDict[first] = [second];
 
@@ -117,16 +117,8 @@ public class Day5(int day) : BaseDay(day)
                 var rules = rulesDict[pageNum];
 
                 foreach (var rule in rules)
-                {
                     if (processedUpdate.Contains(rule))
-                    {
                         valid = false;
-                        break;
-                    }
-                }
-
-                if (!valid)
-                    break;
 
                 processedUpdate.Add(pageNum);
             }
@@ -143,53 +135,59 @@ public class Day5(int day) : BaseDay(day)
 
             foreach (var pageNum in invalidUpdate)
             {
-                // No rules to follow, or this is the first one
                 if (!rulesDict.ContainsKey(pageNum) || validUpdate.Count == 0)
                 {
                     validUpdate.Add(pageNum);
                     continue;
                 }
 
-                // Get the rules for our current pageNum we're trying to add
-                var rules = rulesDict[pageNum];
-
-                // We will look for its location in the list we're currently building
                 var currentDesiredIndex = 0;
-                var locationFound = false;
 
-                while (!locationFound)
+                while (true)
                 {
-                    // We may have already hit the end
-                    if (currentDesiredIndex == validUpdate.Count)
+                    if (currentDesiredIndex == invalidUpdate.Count)
                     {
-                        locationFound = true;
                         validUpdate.Add(pageNum);
+                        break;
                     }
 
-                    var test = new List<int>();
-                    test.AddRange(validUpdate);
-                    test.Insert(currentDesiredIndex, pageNum);
+                    var testAtCurrIndex = new List<int>();
+                    testAtCurrIndex.AddRange(validUpdate);
+                    testAtCurrIndex.Insert(currentDesiredIndex, pageNum);
 
-                    var slice = test.Slice(
-                        currentDesiredIndex + 1,
-                        test.Count - currentDesiredIndex - 1
-                    );
+                    var seen = new List<int>();
+                    var valid = true;
 
-                    if (!slice.Any(x => rules.Contains(x)))
+                    foreach (var test in testAtCurrIndex)
                     {
-                        locationFound = true;
-                        validUpdate = test;
+                        if (!rulesDict.ContainsKey(test))
+                        {
+                            seen.Add(test);
+                            continue;
+                        }
+
+                        var rules = rulesDict[test];
+
+                        if (seen.Any(rules.Contains))
+                        {
+                            valid = false;
+                            break;
+                        }
+
+                        seen.Add(test);
+                    }
+
+                    if (valid)
+                    {
+                        validUpdate.Insert(currentDesiredIndex, pageNum);
+                        break;
                     }
                     else
-                    {
                         currentDesiredIndex++;
-                    }
                 }
             }
 
-            // TODO: reorder the invalid update
-
-            validUpdates.Add(validUpdate.ToList());
+            validUpdates.Add([.. validUpdate]);
         }
 
         var result = 0;
