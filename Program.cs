@@ -1,5 +1,5 @@
 ﻿using System;
-using advent2024;
+using advent2024.Days;
 
 if (!int.TryParse(args[0], out var day) || !int.TryParse(args[1], out var part))
 {
