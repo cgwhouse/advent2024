@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace advent2024;
+namespace advent2024.Days;
 
 public abstract class BaseDay(int day)
 {
