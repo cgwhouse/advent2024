@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace advent2024.Days;
 
 public class Day6(int day) : BaseDay(day)
 {
     private static readonly char[] Directions = ['<', '>', '^', 'v'];
-    private const int AttemptCount = 1000;
+    private const int VisitCount = 10;
 
     protected override string SolveFirst()
     {
@@ -95,7 +96,6 @@ public class Day6(int day) : BaseDay(day)
 
     protected override string SolveSecond()
     {
-        // Build board and find starting position
         var board = new List<List<char>>();
 
         foreach (var line in InputFromFile)
@@ -119,72 +119,125 @@ public class Day6(int day) : BaseDay(day)
 
         var result = 0;
 
-        // Traverse the whole board, pretending we put a new obstacle at each location on the board
-        // (unless it's the starting location of the guard)
-        for (int i = 0; i < board.Count; i++)
-        {
-            for (int j = 0; j < board[i].Count; j++)
+        Parallel.For(
+            0,
+            board.Count,
+            new ParallelOptions() { MaxDegreeOfParallelism = 5 },
+            i =>
             {
-                // Skip this trial if it's the starting location of the guard
-                if (Directions.Contains(board[i][j]))
-                    continue;
+                Parallel.For(
+                    0,
+                    board[i].Count,
+                    new ParallelOptions() { MaxDegreeOfParallelism = 2 },
+                    j =>
+                    {
+                        // Skip this trial if it's the starting location of the guard
+                        if (Directions.Contains(board[i][j]))
+                            return;
 
-                var testBoard = new List<List<char>>();
-                foreach (var row in board)
-                {
-                    var testRow = new List<char>(row);
-                    testBoard.Add(testRow);
-                }
+                        var testBoard = new List<List<char>>();
+                        foreach (var row in board)
+                        {
+                            var testRow = new List<char>(row);
+                            testBoard.Add(testRow);
+                        }
 
-                testBoard[i][j] = '#';
+                        if (testBoard[i][j] == '#')
+                            return;
 
-                if (!CanEscape(testBoard, startingRow, startingColumn))
-                    result++;
+                        testBoard[i][j] = '#';
+
+                        if (!CanEscape(testBoard, startingRow, startingColumn))
+                            result++;
+                    }
+                );
             }
-        }
+        );
 
         return result.ToString();
     }
 
     private static bool CanEscape(List<List<char>> board, int row, int column)
     {
-        var attempts = 0;
+        var attemptDict = new Dictionary<(int, int), int>();
 
         while (true)
         {
             try
             {
-                if (board[row][column] == '>' && board[row][column + 1] == '#')
-                {
-                    attempts++;
-                    if (attempts == AttemptCount)
-                        return false;
+                // Assume currently stuck
+                var stuck = true;
 
-                    board[row][column] = 'v';
-                }
-                else if (board[row][column] == 'v' && board[row + 1][column] == '#')
+                while (stuck)
                 {
-                    attempts++;
-                    if (attempts == AttemptCount)
-                        return false;
+                    if (board[row][column] == '>' && board[row][column + 1] == '#')
+                    {
+                        if (attemptDict.ContainsKey((row, column + 1)))
+                        {
+                            attemptDict[(row, column + 1)]++;
 
-                    board[row][column] = '<';
-                }
-                else if (board[row][column] == '<' && board[row][column - 1] == '#')
-                {
-                    attempts++;
-                    if (attempts == AttemptCount)
-                        return false;
+                            if (attemptDict[(row, column + 1)] == VisitCount)
+                                return false;
+                        }
+                        else
+                        {
+                            attemptDict[(row, column + 1)] = 1;
+                        }
 
-                    board[row][column] = '^';
-                }
-                else if (board[row][column] == '^' && board[row - 1][column] == '#')
-                {
-                    attempts++;
-                    if (attempts == AttemptCount)
-                        return false;
+                        board[row][column] = 'v';
+                    }
+                    else if (board[row][column] == 'v' && board[row + 1][column] == '#')
+                    {
+                        if (attemptDict.ContainsKey((row + 1, column)))
+                        {
+                            attemptDict[(row + 1, column)]++;
 
-                    board[row][column] = '>';
+                            if (attemptDict[(row + 1, column)] == VisitCount)
+                                return false;
+                        }
+                        else
+                        {
+                            attemptDict[(row + 1, column)] = 1;
+                        }
+
+                        board[row][column] = '<';
+                    }
+                    else if (board[row][column] == '<' && board[row][column - 1] == '#')
+                    {
+                        if (attemptDict.ContainsKey((row, column - 1)))
+                        {
+                            attemptDict[(row, column - 1)]++;
+
+                            if (attemptDict[(row, column - 1)] == VisitCount)
+                                return false;
+                        }
+                        else
+                        {
+                            attemptDict[(row, column - 1)] = 1;
+                        }
+
+                        board[row][column] = '^';
+                    }
+                    else if (board[row][column] == '^' && board[row - 1][column] == '#')
+                    {
+                        if (attemptDict.ContainsKey((row - 1, column)))
+                        {
+                            attemptDict[(row - 1, column)]++;
+
+                            if (attemptDict[(row - 1, column)] == VisitCount)
+                                return false;
+                        }
+                        else
+                        {
+                            attemptDict[(row - 1, column)] = 1;
+                        }
+
+                        board[row][column] = '>';
+                    }
+                    else
+                    {
+                        stuck = false;
+                    }
                 }
             }
             catch (ArgumentOutOfRangeException)
