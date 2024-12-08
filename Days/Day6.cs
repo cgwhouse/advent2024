@@ -6,13 +6,16 @@ namespace advent2024.Days;
 
 public class Day6(int day) : BaseDay(day)
 {
+    private static readonly char[] Directions = ['<', '>', '^', 'v'];
+    private const int AttemptCount = 1000;
+
     protected override string SolveFirst()
     {
         // Build board and find starting position
         var board = new List<List<char>>();
 
         foreach (var line in InputFromFile)
-            board.Add(line.ToCharArray().ToList());
+            board.Add([.. line.ToCharArray()]);
 
         int row = -1;
         int column = -1;
@@ -21,7 +24,7 @@ public class Day6(int day) : BaseDay(day)
         {
             for (int j = 0; j < board[i].Count; j++)
             {
-                if (new char[] { '<', '>', '^', 'v' }.Contains(board[i][j]))
+                if (Directions.Contains(board[i][j]))
                 {
                     row = i;
                     column = j;
@@ -96,7 +99,7 @@ public class Day6(int day) : BaseDay(day)
         var board = new List<List<char>>();
 
         foreach (var line in InputFromFile)
-            board.Add(line.ToCharArray().ToList());
+            board.Add([.. line.ToCharArray()]);
 
         int startingRow = -1;
         int startingColumn = -1;
@@ -105,7 +108,7 @@ public class Day6(int day) : BaseDay(day)
         {
             for (int j = 0; j < board[i].Count; j++)
             {
-                if (new char[] { '<', '>', '^', 'v' }.Contains(board[i][j]))
+                if (Directions.Contains(board[i][j]))
                 {
                     startingRow = i;
                     startingColumn = j;
@@ -120,13 +123,19 @@ public class Day6(int day) : BaseDay(day)
         // (unless it's the starting location of the guard)
         for (int i = 0; i < board.Count; i++)
         {
-            for (int j = 0; j < board.Count; j++)
+            for (int j = 0; j < board[i].Count; j++)
             {
                 // Skip this trial if it's the starting location of the guard
-                if (new char[] { '<', '>', '^', 'v' }.Contains(board[i][j]))
+                if (Directions.Contains(board[i][j]))
                     continue;
 
-                var testBoard = board;
+                var testBoard = new List<List<char>>();
+                foreach (var row in board)
+                {
+                    var testRow = new List<char>(row);
+                    testBoard.Add(testRow);
+                }
+
                 testBoard[i][j] = '#';
 
                 if (!CanEscape(testBoard, startingRow, startingColumn))
@@ -139,38 +148,42 @@ public class Day6(int day) : BaseDay(day)
 
     private static bool CanEscape(List<List<char>> board, int row, int column)
     {
-        //var uniquePositions = new HashSet<(int, int)>();
         var attempts = 0;
 
         while (true)
         {
-            if (attempts == 1000000)
-                return false;
-
-            // We are not out of the grid, meaning the tile we're currently on counts
-            // as a valid position, increment result
-            //uniquePositions.Add((row, column));
-
-            // These checks for "are we being obstructed currently" will fail
-            // at the edge / when we're ready to exit the board, so return result then
             try
             {
-                // See if we can move forward in the direction we are facing
-                // If not, rotate and then move in that direction instead
                 if (board[row][column] == '>' && board[row][column + 1] == '#')
                 {
+                    attempts++;
+                    if (attempts == AttemptCount)
+                        return false;
+
                     board[row][column] = 'v';
                 }
                 else if (board[row][column] == 'v' && board[row + 1][column] == '#')
                 {
+                    attempts++;
+                    if (attempts == AttemptCount)
+                        return false;
+
                     board[row][column] = '<';
                 }
                 else if (board[row][column] == '<' && board[row][column - 1] == '#')
                 {
+                    attempts++;
+                    if (attempts == AttemptCount)
+                        return false;
+
                     board[row][column] = '^';
                 }
                 else if (board[row][column] == '^' && board[row - 1][column] == '#')
                 {
+                    attempts++;
+                    if (attempts == AttemptCount)
+                        return false;
+
                     board[row][column] = '>';
                 }
             }
@@ -183,7 +196,6 @@ public class Day6(int day) : BaseDay(day)
             var currentPosition = board[row][column];
             board[row][column] = '.';
 
-            // We are now rotated in the right direction (if needed), move forward based on direction
             switch (currentPosition)
             {
                 case '>':
@@ -201,7 +213,6 @@ public class Day6(int day) : BaseDay(day)
             }
 
             board[row][column] = currentPosition;
-            attempts++;
         }
     }
 }
