@@ -8,8 +8,9 @@ public class Day9(int day) : BaseDay(day)
     protected override string SolveFirst()
     {
         var diskMap = InputFromFile.First() ?? throw new Exception();
-        var diskMapExpanded = "";
 
+        // First create the expanded version of the disk map with '.' for free space
+        var diskMapExpanded = "";
         var currentID = 0;
         var isFile = true;
 
@@ -17,11 +18,8 @@ public class Day9(int day) : BaseDay(day)
         {
             var sizeOfThing = int.Parse(diskMap[i].ToString());
 
-            // Add however many chars to the expanded disk map based on the size
             for (int j = 0; j < sizeOfThing; j++)
             {
-                // If we're currently doing a file add the ID we're on
-                // Otherwise just do dots
                 if (isFile)
                     diskMapExpanded += currentID.ToString();
                 else
