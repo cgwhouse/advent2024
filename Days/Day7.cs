@@ -14,16 +14,44 @@ public class Day7(int day) : BaseDay(day)
 
         foreach (var line in InputFromFile)
         {
-            var desiredResult = long.Parse(line.Split(':')[0]);
+            var pieces = line.Split(':');
 
-            Console.WriteLine(desiredResult);
-        }
+            var desiredResult = long.Parse(pieces[0]);
 
-        var test = GenerateOperators(3);
+            var nums = new List<long>();
+            foreach (var s in pieces[1].Split(' '))
+                if (long.TryParse(s, out var n))
+                    nums.Add(n);
 
-        foreach (var thing in test)
-        {
-            Console.WriteLine(string.Join("", thing));
+            // Try each possible combo of operators on nums,
+            // if we find a desiredResult mark as success and keep going
+            var opCombos = GenerateOperators(nums.Count() - 1);
+
+            // Apply this set of ops to nums
+            foreach (var combo in opCombos)
+            {
+                var opQueue = new Queue<char>(combo);
+                var numQueue = new Queue<long>(nums);
+
+                var curr = numQueue.Dequeue();
+
+                while (numQueue.Any())
+                {
+                    var nextOp = opQueue.Dequeue();
+                    var nextNum = numQueue.Dequeue();
+
+                    if (nextOp == '+')
+                        curr += nextNum;
+                    else
+                        curr *= nextNum;
+                }
+
+                if (curr == desiredResult)
+                {
+                    result++;
+                    break;
+                }
+            }
         }
 
         return result.ToString();
