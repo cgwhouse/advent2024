@@ -10,7 +10,7 @@ public class Day7(int day) : BaseDay(day)
 
     protected override string SolveFirst()
     {
-        var result = 0;
+        long result = 0;
 
         foreach (var line in InputFromFile)
         {
@@ -48,7 +48,7 @@ public class Day7(int day) : BaseDay(day)
 
                 if (curr == desiredResult)
                 {
-                    result++;
+                    result += desiredResult;
                     break;
                 }
             }
