@@ -15,7 +15,7 @@ public class Day9(int day) : BaseDay(day)
 
         for (int i = 0; i < diskMap.Length; i++)
         {
-            var sizeOfThing = diskMap[i];
+            var sizeOfThing = int.Parse(diskMap[i].ToString());
 
             // Add however many chars to the expanded disk map based on the size
             for (int j = 0; j < sizeOfThing; j++)
@@ -23,14 +23,15 @@ public class Day9(int day) : BaseDay(day)
                 // If we're currently doing a file add the ID we're on
                 // Otherwise just do dots
                 if (isFile)
-                {
                     diskMapExpanded += currentID.ToString();
-                }
                 else
-                {
                     diskMapExpanded += '.';
-                }
             }
+
+            if (isFile)
+                currentID++;
+
+            isFile = !isFile;
         }
 
         Console.WriteLine(diskMapExpanded);
