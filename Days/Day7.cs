@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,8 +5,8 @@ namespace advent2024.Days;
 
 public class Day7(int day) : BaseDay(day)
 {
-    private static readonly char[] PossibleOperatorsFirst = { '+', '*' };
-    private static readonly char[] PossibleOperatorsSecond = { '+', '*', '|' };
+    private static readonly char[] PossibleOperatorsFirst = ['+', '*'];
+    private static readonly char[] PossibleOperatorsSecond = ['+', '*', '|'];
 
     protected override string SolveFirst()
     {
@@ -26,7 +25,7 @@ public class Day7(int day) : BaseDay(day)
 
             // Try each possible combo of operators on nums,
             // if we find a desiredResult mark as success and keep going
-            var opCombos = GenerateOperators(nums.Count() - 1, PossibleOperatorsFirst);
+            var opCombos = GenerateOperators(nums.Count - 1, PossibleOperatorsFirst);
 
             // Apply this set of ops to nums
             foreach (var combo in opCombos)
@@ -36,7 +35,7 @@ public class Day7(int day) : BaseDay(day)
 
                 var curr = numQueue.Dequeue();
 
-                while (numQueue.Any())
+                while (numQueue.Count != 0)
                 {
                     var nextOp = opQueue.Dequeue();
                     var nextNum = numQueue.Dequeue();
@@ -64,14 +63,14 @@ public class Day7(int day) : BaseDay(day)
 
         Dive("", 0, numberOfOperators, ref result, possibleOperators);
 
-        return result.Where(x => x.Count() == numberOfOperators).ToList();
+        return result.Where(x => x.Length == numberOfOperators).ToList();
     }
 
     // I had to steal this from SO :(
     private static void Dive(
         string prefix,
         int level,
-        int maxlength,
+        int maxLength,
         ref List<char[]> result,
         char[] possibleOperators
     )
@@ -82,8 +81,8 @@ public class Day7(int day) : BaseDay(day)
         {
             result.Add((prefix + o).ToCharArray());
 
-            if (level < maxlength)
-                Dive(prefix + o, level, maxlength, ref result, possibleOperators);
+            if (level < maxLength)
+                Dive(prefix + o, level, maxLength, ref result, possibleOperators);
         }
     }
 
@@ -104,7 +103,7 @@ public class Day7(int day) : BaseDay(day)
 
             // Try each possible combo of operators on nums,
             // if we find a desiredResult mark as success and keep going
-            var opCombos = GenerateOperators(nums.Count() - 1, PossibleOperatorsSecond);
+            var opCombos = GenerateOperators(nums.Count - 1, PossibleOperatorsSecond);
 
             // Apply this set of ops to nums
             foreach (var combo in opCombos)
@@ -114,7 +113,7 @@ public class Day7(int day) : BaseDay(day)
 
                 var curr = numQueue.Dequeue();
 
-                while (numQueue.Any())
+                while (numQueue.Count != 0)
                 {
                     var nextOp = opQueue.Dequeue();
                     var nextNum = numQueue.Dequeue();
