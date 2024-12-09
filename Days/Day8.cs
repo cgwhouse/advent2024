@@ -5,6 +5,8 @@ namespace advent2024.Days;
 
 public class Day8(int day) : BaseDay(day)
 {
+    private const int NumberOfLoops = 100;
+
     protected override string SolveFirst()
     {
         var board = new List<char[]>();
@@ -141,7 +143,7 @@ public class Day8(int day) : BaseDay(day)
         var currentFirst = firstPoint;
         var currentSecond = secondPoint;
 
-        for (int i = 0; i < 100000; i++)
+        for (int i = 0; i < NumberOfLoops; i++)
         {
             int antiRow;
             int antiColumn;
@@ -170,24 +172,8 @@ public class Day8(int day) : BaseDay(day)
         currentFirst = firstPoint;
         currentSecond = secondPoint;
 
-        //if (firstPoint.Row < secondPoint.Row)
-        //    firstAntiRow = secondPoint.Row - (rowDiff * 2);
-        //else if (firstPoint.Row > secondPoint.Row)
-        //    firstAntiRow = secondPoint.Row + (rowDiff * 2);
-        //else
-        //    firstAntiRow = firstPoint.Row;
-
-        //if (firstPoint.Column < secondPoint.Column)
-        //    firstAntiColumn = secondPoint.Column - (colDiff * 2);
-        //else if (firstPoint.Column > secondPoint.Column)
-        //    firstAntiColumn = secondPoint.Column + (colDiff * 2);
-        //else
-        //    firstAntiColumn = firstPoint.Column;
-
-        //result.Add((firstAntiRow, firstAntiColumn));
-
         // Now start at the first point and move to the second point
-        for (int i = 0; i < 100000; i++)
+        for (int i = 0; i < NumberOfLoops; i++)
         {
             int antiRow;
             int antiColumn;
