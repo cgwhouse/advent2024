@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace advent2024.Days;
 
@@ -30,6 +31,45 @@ public class Day10(int day) : BaseDay(day)
             {
                 if (board[i][j] == 0)
                     trailheadDict[(i, j)] = new HashSet<(int Row, int Column)>();
+            }
+        }
+
+        // TODO: iterate through each trailhead and try to figure out its score
+        foreach (var trailhead in trailheadDict.Keys)
+        {
+            // create collection of possible routes
+            var routeStack = new Stack<(int Row, int Column)>();
+            routeStack.Push((trailhead.Row, trailhead.Column));
+
+            while (routeStack.Count > 0)
+            {
+                var current = routeStack.Pop();
+                var targetValue = board[current.Row][current.Column] + 1;
+
+                var directionsToTry = ImmutableList.Create(
+                    (current.Row + 1, current.Column),
+                    (current.Row - 1, current.Column),
+                    (current.Row, current.Column + 1),
+                    (current.Row, current.Column - 1)
+                );
+
+                foreach (var direction in directionsToTry)
+                {
+                    try
+                    {
+                        if (board[direction.Item1][direction.Item2] == targetValue)
+                        {
+                            if (targetValue == 9)
+                                trailheadDict[trailhead].Add((direction.Item1, direction.Item2));
+                        }
+                        else
+                            routeStack.Push((direction.Item1, direction.Item2));
+                    }
+                    catch (ArgumentOutOfRangeException) { }
+                }
+
+                // Grab thing off the stack, look at the spots around it for the value + 1
+                // if we find any with the target value, add them to the stack with the next target value
             }
         }
 
