@@ -52,7 +52,7 @@ public class Day9(int day) : BaseDay(day)
                 continue;
             }
 
-            // We have a free space, pull something off the right, then add to indices
+            // We have a free space, pull something off the right
             compactedDiskMap.Add(diskMapExpanded[currentRight]);
 
             // Find the next thing on the right we can swap into free space
@@ -62,17 +62,9 @@ public class Day9(int day) : BaseDay(day)
         }
 
         long result = 0;
-        long curr = 0;
 
-        foreach (var s in compactedDiskMap)
-        {
-            if (s == ".")
-                continue;
-
-            result += curr * long.Parse(s.ToString());
-
-            curr++;
-        }
+        for (int i = 0; i < compactedDiskMap.Count; i++)
+            result += i * long.Parse(compactedDiskMap[i].ToString());
 
         return result.ToString();
     }
