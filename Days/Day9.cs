@@ -67,7 +67,6 @@ public class Day9(int day) : BaseDay(day)
         }
 
         //Console.WriteLine(compactedDiskMap);
-
         long result = 0;
 
         for (int i = 0; i < compactedDiskMap.Length; i++)
