@@ -15,13 +15,11 @@ public class Day10(int day) : BaseDay(day)
             var row = new List<int>();
 
             foreach (var n in line)
-                row.Add(n);
+                row.Add(int.Parse(n.ToString()));
 
             board.Add(row);
         }
 
-        // Keys are (x,y) of trailheads
-        // Values are the 9s that can be reached from each trailhead key
         var trailheadDict = new Dictionary<(int Row, int Column), HashSet<(int Row, int Column)>>();
 
         // Gather trailheads as keys
@@ -30,27 +28,25 @@ public class Day10(int day) : BaseDay(day)
             for (int j = 0; j < board[i].Count; j++)
             {
                 if (board[i][j] == 0)
-                    trailheadDict[(i, j)] = new HashSet<(int Row, int Column)>();
+                    trailheadDict[(i, j)] = [];
             }
         }
 
-        // TODO: iterate through each trailhead and try to figure out its score
         foreach (var trailhead in trailheadDict.Keys)
         {
-            // create collection of possible routes
             var routeStack = new Stack<(int Row, int Column)>();
             routeStack.Push((trailhead.Row, trailhead.Column));
 
             while (routeStack.Count > 0)
             {
-                var current = routeStack.Pop();
-                var targetValue = board[current.Row][current.Column] + 1;
+                var (Row, Column) = routeStack.Pop();
+                var targetValue = board[Row][Column] + 1;
 
                 var directionsToTry = ImmutableList.Create(
-                    (current.Row + 1, current.Column),
-                    (current.Row - 1, current.Column),
-                    (current.Row, current.Column + 1),
-                    (current.Row, current.Column - 1)
+                    (Row + 1, Column),
+                    (Row - 1, Column),
+                    (Row, Column + 1),
+                    (Row, Column - 1)
                 );
 
                 foreach (var direction in directionsToTry)
@@ -61,25 +57,88 @@ public class Day10(int day) : BaseDay(day)
                         {
                             if (targetValue == 9)
                                 trailheadDict[trailhead].Add((direction.Item1, direction.Item2));
+                            else
+                                routeStack.Push((direction.Item1, direction.Item2));
                         }
-                        else
-                            routeStack.Push((direction.Item1, direction.Item2));
                     }
                     catch (ArgumentOutOfRangeException) { }
                 }
-
-                // Grab thing off the stack, look at the spots around it for the value + 1
-                // if we find any with the target value, add them to the stack with the next target value
             }
         }
 
         var result = 0;
+
+        foreach (var trailhead in trailheadDict.Keys)
+            result += trailheadDict[trailhead].Count;
 
         return result.ToString();
     }
 
     protected override string SolveSecond()
     {
-        throw new NotImplementedException();
+        var board = new List<List<int>>();
+
+        foreach (var line in InputFromFile)
+        {
+            var row = new List<int>();
+
+            foreach (var n in line)
+                row.Add(int.Parse(n.ToString()));
+
+            board.Add(row);
+        }
+
+        var trailheadDict = new Dictionary<(int Row, int Column), List<(int Row, int Column)>>();
+
+        // Gather trailheads as keys
+        for (int i = 0; i < board.Count; i++)
+        {
+            for (int j = 0; j < board[i].Count; j++)
+            {
+                if (board[i][j] == 0)
+                    trailheadDict[(i, j)] = [];
+            }
+        }
+
+        foreach (var trailhead in trailheadDict.Keys)
+        {
+            var routeStack = new Stack<(int Row, int Column)>();
+            routeStack.Push((trailhead.Row, trailhead.Column));
+
+            while (routeStack.Count > 0)
+            {
+                var (Row, Column) = routeStack.Pop();
+                var targetValue = board[Row][Column] + 1;
+
+                var directionsToTry = ImmutableList.Create(
+                    (Row + 1, Column),
+                    (Row - 1, Column),
+                    (Row, Column + 1),
+                    (Row, Column - 1)
+                );
+
+                foreach (var direction in directionsToTry)
+                {
+                    try
+                    {
+                        if (board[direction.Item1][direction.Item2] == targetValue)
+                        {
+                            if (targetValue == 9)
+                                trailheadDict[trailhead].Add((direction.Item1, direction.Item2));
+                            else
+                                routeStack.Push((direction.Item1, direction.Item2));
+                        }
+                    }
+                    catch (ArgumentOutOfRangeException) { }
+                }
+            }
+        }
+
+        var result = 0;
+
+        foreach (var trailhead in trailheadDict.Keys)
+            result += trailheadDict[trailhead].Count;
+
+        return result.ToString();
     }
 }
