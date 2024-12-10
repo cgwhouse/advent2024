@@ -11,7 +11,7 @@ public class Day9(int day) : BaseDay(day)
         var diskMap = InputFromFile.First() ?? throw new Exception();
 
         // First create the expanded version of the disk map with '.' for free space
-        var diskMapExpanded = "";
+        var diskMapExpanded = new List<string>();
         var currentID = 0;
         var isFile = true;
 
@@ -22,9 +22,9 @@ public class Day9(int day) : BaseDay(day)
             for (int j = 0; j < sizeOfThing; j++)
             {
                 if (isFile)
-                    diskMapExpanded += currentID.ToString();
+                    diskMapExpanded.Add(currentID.ToString());
                 else
-                    diskMapExpanded += '.';
+                    diskMapExpanded.Add(".");
             }
 
             if (isFile)
@@ -35,46 +35,43 @@ public class Day9(int day) : BaseDay(day)
 
         // As we encounter free space while moving left to right,
         // keep track of where we are as we're pulling values off of the right side
-        var currentRight = diskMapExpanded.Length - 1;
-        while (diskMapExpanded[currentRight] == '.')
+        var currentRight = diskMapExpanded.Count - 1;
+        while (diskMapExpanded[currentRight] == ".")
             currentRight--;
 
-        var compactedDiskMap = "";
-        var indicesAlreadyCompacted = new HashSet<int>();
+        var compactedDiskMap = new List<string>();
 
-        for (int i = 0; i < diskMapExpanded.Length; i++)
+        for (int i = 0; i < diskMapExpanded.Count; i++)
         {
-            if (i > currentRight || indicesAlreadyCompacted.Contains(i))
-            {
-                compactedDiskMap += '.';
-                continue;
-            }
+            if (i > currentRight)
+                break;
 
-            if (diskMapExpanded[i] != '.')
+            if (diskMapExpanded[i] != ".")
             {
-                compactedDiskMap += diskMapExpanded[i];
+                compactedDiskMap.Add(diskMapExpanded[i]);
                 continue;
             }
 
             // We have a free space, pull something off the right, then add to indices
-            compactedDiskMap += diskMapExpanded[currentRight];
-            indicesAlreadyCompacted.Add(currentRight);
+            compactedDiskMap.Add(diskMapExpanded[currentRight]);
 
             // Find the next thing on the right we can swap into free space
             currentRight--;
-            while (diskMapExpanded[currentRight] == '.')
+            while (diskMapExpanded[currentRight] == ".")
                 currentRight--;
         }
 
-        //Console.WriteLine(compactedDiskMap);
         long result = 0;
+        long curr = 0;
 
-        for (int i = 0; i < compactedDiskMap.Length; i++)
+        foreach (var s in compactedDiskMap)
         {
-            if (compactedDiskMap[i] == '.')
+            if (s == ".")
                 continue;
 
-            result += int.Parse(compactedDiskMap[i].ToString()) * i;
+            result += curr * long.Parse(s.ToString());
+
+            curr++;
         }
 
         return result.ToString();
