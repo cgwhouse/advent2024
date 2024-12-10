@@ -11,8 +11,13 @@ var dayType =
     Type.GetType($"advent2024.Days.Day{day}")
     ?? throw new Exception($"Unable to find implementation for day {day}");
 
+// Check for "Use sample input" arg
+var useSampleInput = false;
+if (args.Length > 2 && args[2] == "true")
+    useSampleInput = true;
+
 var dayInstance =
-    (BaseDay?)Activator.CreateInstance(dayType, day)
+    (BaseDay?)Activator.CreateInstance(dayType, day, useSampleInput)
     ?? throw new Exception($"Unable to calculate solution for day {day}");
 
 string result;
