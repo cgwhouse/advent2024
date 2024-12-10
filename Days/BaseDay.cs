@@ -2,9 +2,9 @@ using System.IO;
 
 namespace advent2024.Days;
 
-public abstract class BaseDay(int day, bool useSampleInput = false)
+public abstract class BaseDay(int day)
 {
-    protected string[] InputFromFile = useSampleInput
+    protected string[] InputFromFile = Program.UseSampleInput
         ? File.ReadAllLines($"Inputs/sample.txt")
         : File.ReadAllLines($"Inputs/day{day}.txt");
 
